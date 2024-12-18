@@ -5,6 +5,8 @@ const { PrismaClient } = require("@prisma/client");
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const dotenv = require("dotenv");
+const indexRoutes = require("./routes/index");
+const authRoutes = require("./routes/authRoutes");
 
 dotenv.config();
 
@@ -13,6 +15,8 @@ const prisma = new PrismaClient();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.set("view engine", "ejs");
+app.set("views", "./src/views");
 
 app.use(
   session({
@@ -47,6 +51,7 @@ passport.deserializeUser(async (id, done) => {
   done(null, user);
 });
 
-app.get("/", (req, res) => res.send("Hello World!"));
+app.get("/", indexRoutes);
+app.use("/", authRoutes);
 
 module.exports = app;
