@@ -4,6 +4,7 @@ const { PrismaSessionStore } = require("@quixo3/prisma-session-store");
 const { PrismaClient } = require("@prisma/client");
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
+const bcrypt = require("bcrypt");
 const dotenv = require("dotenv");
 const indexRoutes = require("./routes/index");
 const authRoutes = require("./routes/authRoutes");
@@ -16,6 +17,8 @@ const prisma = new PrismaClient();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
+app.engine("ejs", require("ejs").__express);
+
 app.set("views", "./src/views");
 
 app.use(
@@ -38,17 +41,34 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 passport.use(
-  new LocalStrategy(async (username, password, done) => {
-    const user = await prisma.user.findUnique({ where: { email: username } });
-    if (!user || user.password !== password) return done(null, false);
-    return done(null, user);
-  })
+  new LocalStrategy(
+    { usernameField: "email" }, 
+    async (email, password, done) => {
+      try {
+        const user = await prisma.user.findUnique({ where: { email } });
+        if (!user) {
+          return done(null, false, { message: "No user found" });
+        }
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+          return done(null, false, { message: "Incorrect password" });
+        }
+        return done(null, user);
+      } catch (err) {
+        return done(err);
+      }
+    }
+  )
 );
 
 passport.serializeUser((user, done) => done(null, user.id));
 passport.deserializeUser(async (id, done) => {
-  const user = await prisma.user.findUnique({ where: { id } });
-  done(null, user);
+  try {
+    const user = await prisma.user.findUnique({ where: { id } });
+    done(null, user);
+  } catch (err) {
+    done(err);
+  }
 });
 
 app.get("/", indexRoutes);
