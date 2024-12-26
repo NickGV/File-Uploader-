@@ -1,7 +1,7 @@
 const passport = require("passport");
 const bcrypt = require("bcrypt");
-const { PrismaClient } = require("@prisma/client");
 const { validationResult } = require("express-validator");
+const { PrismaClient } = require("@prisma/client");
 
 const prisma = new PrismaClient();
 

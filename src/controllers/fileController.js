@@ -35,7 +35,7 @@ const getFileDetails = async (req, res) => {
       return res.status(404).json({ error: "Archivo no encontrado." });
     }
 
-    res.json(file);
+    res.render("fileDetails", { file });
   } catch (error) {
     res.status(500).json({ error: "Error al obtener los detalles del archivo." });
   }
@@ -59,8 +59,38 @@ const downloadFile = async (req, res) => {
   }
 };
 
+const deleteFile = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    await prisma.file.delete({
+      where: { id: parseInt(id) },
+    });
+    res.redirect("/");
+  } catch (error) {
+    res.status(500).json({ error: "Error al eliminar el archivo." });
+  }
+};
+
+const editFileName = async (req, res) => {
+  const { id } = req.params;
+  const { name } = req.body;
+
+  try {
+    await prisma.file.update({
+      where: { id: parseInt(id) },
+      data: { name },
+    });
+    res.redirect(`/files/${id}`);
+  } catch (error) {
+    res.status(500).json({ error: "Error al editar el nombre del archivo." });
+  }
+};
+
 module.exports = {
   uploadFile,
   getFileDetails,
   downloadFile,
+  deleteFile,
+  editFileName,
 };

@@ -76,6 +76,6 @@ passport.deserializeUser(async (id, done) => {
 app.get("/", indexRoutes);
 app.use("/", authRoutes);
 // app.use("/folders", folderRoutes);
-app.use("/", fileRoutes);
+app.use("/files", fileRoutes);
 
 module.exports = app;
