@@ -8,6 +8,8 @@ const bcrypt = require("bcrypt");
 const dotenv = require("dotenv");
 const indexRoutes = require("./routes/index");
 const authRoutes = require("./routes/authRoutes");
+const folderRoutes = require("./routes/folderRoutes")
+const fileRoutes = require("./routes/fileRoutes");
 
 dotenv.config();
 
@@ -73,5 +75,7 @@ passport.deserializeUser(async (id, done) => {
 
 app.get("/", indexRoutes);
 app.use("/", authRoutes);
+// app.use("/folders", folderRoutes);
+app.use("/", fileRoutes);
 
 module.exports = app;
