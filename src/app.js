@@ -6,6 +6,7 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const bcrypt = require("bcrypt");
 const dotenv = require("dotenv");
+const path = require("path");
 const indexRoutes = require("./routes/index");
 const authRoutes = require("./routes/authRoutes");
 const folderRoutes = require("./routes/folderRoutes");
@@ -22,6 +23,9 @@ app.set("view engine", "ejs");
 app.engine("ejs", require("ejs").__express);
 
 app.set("views", "./src/views");
+
+// Servir archivos estáticos desde la carpeta "uploads"
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use(
   session({
@@ -75,7 +79,7 @@ passport.deserializeUser(async (id, done) => {
 
 app.use("/", indexRoutes);
 app.use("/", authRoutes);
-app.use("/files", fileRoutes);
 app.use("/folders", folderRoutes);
+app.use("/files", fileRoutes);
 
 module.exports = app;
