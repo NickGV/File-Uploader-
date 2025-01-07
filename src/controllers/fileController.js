@@ -20,7 +20,7 @@ const uploadFile = async (req, res) => {
         userId: req.user.id,
       },
     });
-    res.redirect("/");
+    res.redirect(req.get("referer"));
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Error al subir el archivo." });
