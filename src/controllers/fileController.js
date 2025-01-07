@@ -4,7 +4,11 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 const uploadFile = async (req, res) => {
-  const { folderId } = req.body;
+  let { folderId } = req.body;
+  
+  if(folderId){
+    folderId = parseInt(folderId);
+  }
 
   try {
     const file = await prisma.file.create({
