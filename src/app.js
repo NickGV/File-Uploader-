@@ -8,7 +8,7 @@ const bcrypt = require("bcrypt");
 const dotenv = require("dotenv");
 const indexRoutes = require("./routes/index");
 const authRoutes = require("./routes/authRoutes");
-const folderRoutes = require("./routes/folderRoutes")
+const folderRoutes = require("./routes/folderRoutes");
 const fileRoutes = require("./routes/fileRoutes");
 
 dotenv.config();
@@ -44,7 +44,7 @@ app.use(passport.session());
 
 passport.use(
   new LocalStrategy(
-    { usernameField: "email" }, 
+    { usernameField: "email" },
     async (email, password, done) => {
       try {
         const user = await prisma.user.findUnique({ where: { email } });
@@ -73,9 +73,9 @@ passport.deserializeUser(async (id, done) => {
   }
 });
 
-app.get("/", indexRoutes);
+app.use("/", indexRoutes);
 app.use("/", authRoutes);
-// app.use("/folders", folderRoutes);
 app.use("/files", fileRoutes);
+app.use("/folders", folderRoutes);
 
 module.exports = app;
